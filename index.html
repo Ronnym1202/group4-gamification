@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GROUP FOUR GAMIFICATION | Quadratic Quest</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="banner">
+    <h1>GROUP FOUR GAMIFICATION</h1>
+    <p class="game-name">Quadratic Quest: The Elephant's Trail</p>
+    <p class="course-name">ECT 301: Instructional Technology &amp; ICT Integration</p>
+    <p class="lecturer-line">Course Lecturer: Dr. Rachael Wanjiku</p>
+  </header>
+
+  <main>
+
+    <!-- The elephant's trail, only visible once the game starts -->
+    <div class="trail hidden" id="trail">
+      <div class="trail-inner">
+        <div class="track">
+          <div class="fill" id="fill"></div>
+          <span class="dot" style="left:0%"></span>
+          <span class="dot" style="left:25%"></span>
+          <span class="dot" style="left:50%"></span>
+          <span class="dot" style="left:75%"></span>
+          <span class="dot" style="left:100%"></span>
+          <span class="elephant" id="elephant" style="left:0%">&#128024;</span>
+        </div>
+        <div class="stop-names">
+          <span style="left:0%">Gate</span>
+          <span style="left:25%">Bridge</span>
+          <span style="left:50%">Shamba</span>
+          <span style="left:75%">Boss</span>
+          <span style="left:100%">Hill</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- START SCREEN -->
+    <section id="start" class="screen active">
+      <div class="card">
+        <h2>Help the elephant reach Graduation Hill</h2>
+        <p>
+          The Embu elephant has a long walk ahead. Every checkpoint is locked by
+          quadratic questions, and only correct answers will open the way.
+        </p>
+
+        <table class="info">
+          <tr><th>Class</th><td>Grade 10 Mathematics</td></tr>
+          <tr><th>Strand</th><td>Numbers and Algebra</td></tr>
+          <tr><th>Sub-strand</th><td>Quadratic Expressions and Equations</td></tr>
+        </table>
+
+        <h3>How to play</h3>
+        <ul class="rules">
+          <li>You have 3 lives in every level.</li>
+          <li>Each question gives you 30 seconds (unless you tick Relaxed mode).</li>
+          <li>A correct answer earns 10 points plus a time bonus.</li>
+          <li>A hint removes two wrong options but costs 5 points.</li>
+          <li>Get at least 3 out of 5 right to pass a level.</li>
+          <li>Finish all 4 levels with 70% or more to earn a Silver or Gold badge.</li>
+        </ul>
+
+        <div class="tips">
+          <h3>Tips for first-time players</h3>
+          <ul>
+            <li>Work the question out on paper first, then choose an option.</li>
+            <li>Stuck? Press Hint. It removes two wrong options and costs 5 points.</li>
+            <li>A wrong answer is not the end. Read the worked solution to see the steps.</li>
+            <li>If you fail a level you can replay it, and your lives start again at 3.</li>
+            <li>New here? Try the practice question first. It does not count.</li>
+          </ul>
+        </div>
+
+        <p class="thanks">
+          With sincere gratitude to our lecturer, <strong>Dr. Rachael Wanjiku</strong>,
+          who guided us through ECT 301 and inspired this game.
+        </p>
+
+        <label for="nameInput">Your name</label>
+        <input type="text" id="nameInput" maxlength="20" placeholder="Type your name here">
+
+        <label class="check"><input type="checkbox" id="relaxed"> Relaxed mode (no timer, no time bonus)</label>
+
+        <div class="row">
+          <button class="btn" id="startBtn">Start the Quest</button>
+          <button class="btn alt" id="practiceBtn">Practice Question</button>
+          <button class="btn alt" id="boardBtn1">Leaderboard</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEVEL INTRO -->
+    <section id="intro" class="screen">
+      <div class="card">
+        <h2 id="introTitle"></h2>
+        <p class="topic" id="introTopic"></p>
+        <p id="introStory"></p>
+        <p class="tip" id="introTip"></p>
+        <button class="btn" id="beginLevelBtn">Begin Level</button>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game" class="screen">
+      <div class="status">
+        <span id="lvlLabel"></span>
+        <span>Lives: <b id="lives"></b></span>
+        <span>Score: <b id="score">0</b></span>
+        <span>Time: <b id="time">30s</b></span>
+      </div>
+      <div class="timebar-wrap"><div class="timebar" id="timebar"></div></div>
+
+      <div class="card">
+        <p class="qcount" id="qCount"></p>
+        <h2 id="question"></h2>
+        <div id="options"></div>
+        <div class="row">
+          <button class="btn alt small" id="hintBtn">Hint (-5 points)</button>
+          <button class="btn quit small" id="quitBtn">Quit</button>
+        </div>
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+        <button class="btn hidden" id="nextBtn">Next</button>
+      </div>
+    </section>
+
+    <!-- END OF LEVEL -->
+    <section id="levelEnd" class="screen">
+      <div class="card">
+        <h2 id="endTitle"></h2>
+        <p id="endText"></p>
+        <p class="bigline" id="endStats"></p>
+        <button class="btn" id="endBtn">Continue</button>
+      </div>
+    </section>
+
+    <!-- FINAL RESULT -->
+    <section id="final" class="screen">
+      <div class="card center">
+        <h2>Graduation Hill reached!</h2>
+        <div class="badge" id="badge"></div>
+        <p class="bigline" id="finalStats"></p>
+        <p id="finalMsg"></p>
+        <p class="thanks">Thank you, Dr. Rachael Wanjiku, for teaching us ECT 301.</p>
+        <div class="row">
+          <button class="btn" id="againBtn">Play Again</button>
+          <button class="btn alt" id="boardBtn2">Leaderboard</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD -->
+    <section id="board" class="screen">
+      <div class="card">
+        <h2>Leaderboard</h2>
+        <p class="small-note">Top 5 scores saved on this device.</p>
+        <ol id="boardList" class="board-list"></ol>
+        <button class="btn" id="boardBack">Back</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>Designed by ECT 301D Group 4 members</strong></p>
+    <p>Under the guidance of Dr. Rachael Wanjiku</p>
+    <p>University of Embu | Knowledge Transforms</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
