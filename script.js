@@ -582,6 +582,14 @@ function playAgain() {
   show("start");
 }
 
+// on wide screens the help sections start open, on phones they stay folded
+var folds = document.querySelectorAll("details.fold");
+if (window.innerWidth > 600) {
+  for (var f = 0; f < folds.length; f++) {
+    folds[f].open = true;
+  }
+}
+
 // ---------- practice round and quitting ----------
 function startPractice() {
   practice = true;

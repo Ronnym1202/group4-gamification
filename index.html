@@ -48,48 +48,55 @@
           quadratic questions, and only correct answers will open the way.
         </p>
 
-        <table class="info">
-          <tr><th>Class</th><td>Grade 10 Mathematics</td></tr>
-          <tr><th>Strand</th><td>Numbers and Algebra</td></tr>
-          <tr><th>Sub-strand</th><td>Quadratic Expressions and Equations</td></tr>
-        </table>
-
-        <h3>How to play</h3>
-        <ul class="rules">
-          <li>You have 3 lives in every level.</li>
-          <li>Each question gives you 30 seconds (unless you tick Relaxed mode).</li>
-          <li>A correct answer earns 10 points plus a time bonus.</li>
-          <li>A hint removes two wrong options but costs 5 points.</li>
-          <li>Get at least 3 out of 5 right to pass a level.</li>
-          <li>Finish all 4 levels with 70% or more to earn a Silver or Gold badge.</li>
-        </ul>
-
-        <div class="tips">
-          <h3>Tips for first-time players</h3>
-          <ul>
-            <li>Work the question out on paper first, then choose an option.</li>
-            <li>Stuck? Press Hint. It removes two wrong options and costs 5 points.</li>
-            <li>A wrong answer is not the end. Read the worked solution to see the steps.</li>
-            <li>If you fail a level you can replay it, and your lives start again at 3.</li>
-            <li>New here? Try the practice question first. It does not count.</li>
-          </ul>
-        </div>
-
-        <p class="thanks">
-          With sincere gratitude to our lecturer, <strong>Dr. Rachael Wanjiku</strong>,
-          who guided us through ECT 301 and inspired this game.
-        </p>
-
         <label for="nameInput">Your name</label>
         <input type="text" id="nameInput" maxlength="20" placeholder="Type your name here">
 
         <label class="check"><input type="checkbox" id="relaxed"> Relaxed mode (no timer, no time bonus)</label>
 
-        <div class="row">
+        <div class="row stack">
           <button class="btn" id="startBtn">Start the Quest</button>
           <button class="btn alt" id="practiceBtn">Practice Question</button>
           <button class="btn alt" id="boardBtn1">Leaderboard</button>
         </div>
+
+        <p class="newhere">New here? Tap Practice Question first, or open the help sections below.</p>
+
+        <details class="fold">
+          <summary>How to play</summary>
+          <ul class="rules">
+            <li>You have 3 lives in every level.</li>
+            <li>Each question gives you 30 seconds (unless you tick Relaxed mode).</li>
+            <li>A correct answer earns 10 points plus a time bonus.</li>
+            <li>A hint removes two wrong options but costs 5 points.</li>
+            <li>Get at least 3 out of 5 right to pass a level.</li>
+            <li>Finish all 4 levels with 70% or more to earn a Silver or Gold badge.</li>
+          </ul>
+        </details>
+
+        <details class="fold">
+          <summary>Tips for first-time players</summary>
+          <ul class="rules">
+            <li>Work the question out on paper first, then choose an option.</li>
+            <li>Stuck? Press Hint. It removes two wrong options and costs 5 points.</li>
+            <li>A wrong answer is not the end. Read the worked solution to see the steps.</li>
+            <li>If you fail a level you can replay it, and your lives start again at 3.</li>
+            <li>The practice question does not count for anything.</li>
+          </ul>
+        </details>
+
+        <details class="fold">
+          <summary>About this game</summary>
+          <table class="info">
+            <tr><th>Class</th><td>Grade 10 Mathematics</td></tr>
+            <tr><th>Strand</th><td>Numbers and Algebra</td></tr>
+            <tr><th>Sub-strand</th><td>Quadratic Expressions and Equations</td></tr>
+          </table>
+        </details>
+
+        <p class="thanks">
+          With sincere gratitude to our lecturer, <strong>Dr. Rachael Wanjiku</strong>,
+          who guided us through ECT 301 and inspired this game.
+        </p>
       </div>
     </section>
 

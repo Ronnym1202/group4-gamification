@@ -499,3 +499,93 @@ label.check input {
   border: 2px solid var(--red);
   border-bottom-width: 4px;
 }
+
+/* ---------- Folding help sections and small screens ---------- */
+details.fold {
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  margin-top: 10px;
+  background: #fff;
+}
+
+details.fold summary {
+  cursor: pointer;
+  padding: 11px 14px;
+  min-height: 44px;
+  font-weight: bold;
+  color: var(--blue);
+}
+
+details.fold[open] summary {
+  border-bottom: 1px solid #cfd9cf;
+}
+
+details.fold > ul {
+  margin: 10px 14px 12px;
+}
+
+details.fold > table {
+  width: calc(100% - 28px);
+  margin: 10px 14px 12px;
+}
+
+.newhere {
+  font-size: 0.9rem;
+  color: #44554a;
+  margin: 10px 0 0;
+}
+
+.thanks {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .banner {
+    padding: 10px 8px 8px;
+  }
+
+  .banner h1 {
+    font-size: 1.15rem;
+    letter-spacing: 1px;
+  }
+
+  .game-name {
+    font-size: 0.95rem;
+  }
+
+  .course-name {
+    display: none;
+  }
+
+  .lecturer-line {
+    font-size: 0.78rem;
+  }
+
+  main {
+    padding: 10px 10px 24px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .card h2 {
+    font-size: 1.15rem;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  .row.stack .btn {
+    flex: 1 1 100%;
+  }
+
+  .status {
+    font-size: 0.8rem;
+  }
+
+  .option {
+    padding: 12px;
+  }
+}
