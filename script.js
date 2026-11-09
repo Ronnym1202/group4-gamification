@@ -7,6 +7,8 @@ var PASS_MARK = 3;     // correct answers needed (out of 5) to pass a level
 var BOARD_KEY = "group4_quadratic_quest_board";
 var SOUND_KEY = "group4_quadratic_quest_sound";
 var PROGRESS_KEY = "group4_quadratic_quest_progress";
+var TEXT_KEY = "group4_quadratic_quest_text";
+var CONTRAST_KEY = "group4_quadratic_quest_contrast";
 var LETTERS = ["A", "B", "C", "D"];
 
 // In every question the FIRST answer is the correct one.
@@ -282,6 +284,68 @@ function toggleSound() {
   }
   drawSoundButton();
   if (soundOn) playSound("correct");
+}
+
+// ---------- text size and high contrast (remembered on this device) ----------
+var TEXT_SIZES = ["normal", "large", "xlarge"];
+var TEXT_LABELS = ["A", "A+", "A++"];
+var TEXT_WORDS = ["normal", "large", "extra large"];
+var textLevel = 0;
+var highContrast = false;
+
+try {
+  var savedText = TEXT_SIZES.indexOf(localStorage.getItem(TEXT_KEY));
+  if (savedText > -1) textLevel = savedText;
+  highContrast = (localStorage.getItem(CONTRAST_KEY) === "high");
+} catch (e) {
+  // storage blocked, the defaults are used
+}
+
+function applyLook() {
+  var root = document.documentElement;
+  if (textLevel === 0) {
+    root.removeAttribute("data-text");
+  } else {
+    root.setAttribute("data-text", TEXT_SIZES[textLevel]);
+  }
+  if (highContrast) {
+    root.setAttribute("data-contrast", "high");
+  } else {
+    root.removeAttribute("data-contrast");
+  }
+
+  var tb = $("textBtn");
+  tb.textContent = TEXT_LABELS[textLevel];
+  var next = TEXT_WORDS[(textLevel + 1) % 3];
+  tb.setAttribute("aria-label", "Text size is " + TEXT_WORDS[textLevel] +
+    ". Tap to change it to " + next + ".");
+
+  var cb = $("contrastBtn");
+  cb.setAttribute("aria-pressed", highContrast ? "true" : "false");
+  cb.setAttribute("aria-label", highContrast ?
+    "High contrast is on. Tap to turn it off." :
+    "High contrast is off. Tap to turn it on.");
+}
+
+function saveLook() {
+  try {
+    localStorage.setItem(TEXT_KEY, TEXT_SIZES[textLevel]);
+    localStorage.setItem(CONTRAST_KEY, highContrast ? "high" : "normal");
+  } catch (e) {
+    // ignore
+  }
+}
+
+function changeTextSize() {
+  textLevel = (textLevel + 1) % 3;
+  applyLook();
+  saveLook();
+}
+
+function toggleContrast() {
+  highContrast = !highContrast;
+  applyLook();
+  saveLook();
 }
 
 // ---------- reading aloud (the browser's own voice, nothing to install) ----------
@@ -1005,6 +1069,8 @@ $("nameInput").addEventListener("keydown", function (e) {
   if (e.key === "Enter") startGame();
 });
 $("soundBtn").addEventListener("click", toggleSound);
+$("textBtn").addEventListener("click", changeTextSize);
+$("contrastBtn").addEventListener("click", toggleContrast);
 $("readBtn").addEventListener("click", readQuestion);
 $("certBtn").addEventListener("click", showCertificate);
 $("certBack").addEventListener("click", function () { show("final"); });
@@ -1035,4 +1101,5 @@ if (!canSpeak) {
   $("readBtn").classList.add("hidden");
 }
 drawSoundButton();
+applyLook();
 refreshContinue();

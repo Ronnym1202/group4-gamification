@@ -42,7 +42,7 @@ body {
 
 .game-name {
   margin: 4px 0 0;
-  color: var(--gold);
+  color: #ffe07a;
   font-weight: bold;
   font-size: 1.1rem;
 }
@@ -833,4 +833,366 @@ summary:focus-visible {
   margin: 0;
   font-weight: bold;
   color: var(--green-dark);
+}
+
+/* ---------- Text size and contrast buttons ---------- */
+.a11ybtn {
+  position: absolute;
+  left: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.a11ybtn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+#textBtn {
+  top: 8px;
+}
+
+#contrastBtn {
+  top: 52px;
+  font-size: 1.2rem;
+}
+
+/* the little labels on the trail stay the same size so they never crowd each other */
+.stop-names span {
+  font-size: 12px;
+}
+
+/* ---------- Bigger text ---------- */
+html[data-text="large"] {
+  font-size: 125%;
+}
+
+html[data-text="xlarge"] {
+  font-size: 150%;
+}
+
+/* ---------- High contrast: black background, white text, yellow highlights ---------- */
+html[data-contrast="high"] body {
+  background: #000;
+  color: #fff;
+}
+
+html[data-contrast="high"] .banner,
+html[data-contrast="high"] .footer {
+  background: #000;
+  color: #fff;
+}
+
+html[data-contrast="high"] .banner {
+  border-bottom-color: #ffd400;
+}
+
+html[data-contrast="high"] .footer {
+  border-top-color: #ffd400;
+}
+
+html[data-contrast="high"] .game-name {
+  color: #ffd400;
+}
+
+html[data-contrast="high"] .lecturer-line,
+html[data-contrast="high"] .course-name {
+  color: #fff;
+}
+
+html[data-contrast="high"] .soundbtn,
+html[data-contrast="high"] .a11ybtn {
+  border-color: #ffd400;
+  background: #000;
+}
+
+html[data-contrast="high"] .card {
+  background: #000;
+  border-color: #fff;
+  color: #fff;
+  box-shadow: 0 3px 0 #ffd400;
+}
+
+html[data-contrast="high"] .card h2,
+html[data-contrast="high"] .qcount,
+html[data-contrast="high"] .topic,
+html[data-contrast="high"] .bigline {
+  color: #ffd400;
+}
+
+html[data-contrast="high"] .card h3 {
+  color: #fff;
+}
+
+html[data-contrast="high"] .small-note,
+html[data-contrast="high"] .newhere {
+  color: #ddd;
+}
+
+html[data-contrast="high"] .info th {
+  background: #ffd400;
+  color: #000;
+}
+
+html[data-contrast="high"] .info th,
+html[data-contrast="high"] .info td {
+  border-color: #fff;
+}
+
+html[data-contrast="high"] input[type="text"] {
+  background: #000;
+  color: #fff;
+  border-color: #ffd400;
+}
+
+html[data-contrast="high"] .btn {
+  background: #ffd400;
+  color: #000;
+  border-bottom-color: #a38a00;
+}
+
+html[data-contrast="high"] .btn:hover {
+  background: #ffe34d;
+}
+
+html[data-contrast="high"] .btn.alt {
+  background: #fff;
+  color: #000;
+  border-bottom-color: #999;
+}
+
+html[data-contrast="high"] .btn.alt:hover {
+  background: #e6e6e6;
+}
+
+html[data-contrast="high"] .btn.quit {
+  background: #000;
+  color: #ff8a80;
+  border-color: #ff8a80;
+}
+
+html[data-contrast="high"] .btn:disabled {
+  opacity: 0.6;
+}
+
+html[data-contrast="high"] .trail {
+  background: #000;
+  border-color: #fff;
+}
+
+html[data-contrast="high"] .track,
+html[data-contrast="high"] .timebar-wrap {
+  background: #555;
+}
+
+html[data-contrast="high"] .fill,
+html[data-contrast="high"] .timebar {
+  background: #ffd400;
+}
+
+html[data-contrast="high"] .timebar.low {
+  background: #ff6b6b;
+}
+
+html[data-contrast="high"] .dot {
+  background: #ffd400;
+  border-color: #fff;
+}
+
+html[data-contrast="high"] .stop-names span {
+  color: #fff;
+}
+
+html[data-contrast="high"] .status {
+  background: #000;
+  color: #fff;
+  border: 2px solid #ffd400;
+}
+
+html[data-contrast="high"] .option {
+  background: #000;
+  color: #fff;
+  border-color: #fff;
+}
+
+html[data-contrast="high"] .option:hover:not(:disabled) {
+  background: #222;
+}
+
+html[data-contrast="high"] .option .letter {
+  background: #ffd400;
+  color: #000;
+}
+
+html[data-contrast="high"] .option.right {
+  background: #00e676;
+  color: #000;
+  border-color: #fff;
+}
+
+html[data-contrast="high"] .option.wrong {
+  background: #ff8a80;
+  color: #000;
+  border-color: #fff;
+}
+
+html[data-contrast="high"] .option.right .letter,
+html[data-contrast="high"] .option.wrong .letter {
+  background: #000;
+  color: #fff;
+}
+
+html[data-contrast="high"] .option:disabled:not(.right):not(.wrong) {
+  color: #cfcfcf;
+}
+
+html[data-contrast="high"] .feedback .good {
+  background: #000;
+  border: 2px solid #00e676;
+  border-left-width: 8px;
+}
+
+html[data-contrast="high"] .feedback .bad {
+  background: #000;
+  border: 2px solid #ff8a80;
+  border-left-width: 8px;
+}
+
+html[data-contrast="high"] .tips,
+html[data-contrast="high"] .tip,
+html[data-contrast="high"] .thanks,
+html[data-contrast="high"] .resume {
+  background: #000;
+  border: 2px solid #ffd400;
+  color: #fff;
+}
+
+html[data-contrast="high"] .resume p {
+  color: #fff;
+}
+
+html[data-contrast="high"] details.fold {
+  background: #000;
+  border-color: #fff;
+}
+
+html[data-contrast="high"] details.fold summary {
+  color: #ffd400;
+}
+
+html[data-contrast="high"] details.fold[open] summary {
+  border-bottom-color: #fff;
+}
+
+html[data-contrast="high"] .board-list li {
+  border-bottom-color: #fff;
+}
+
+html[data-contrast="high"] .badge {
+  border-color: #fff;
+}
+
+/* the certificate is a paper document, so it stays light even in high contrast */
+html[data-contrast="high"] .certificate {
+  background: #fff;
+  color: #1d2b22;
+}
+
+/* printing always uses normal text size */
+@media print {
+  html[data-text] {
+    font-size: 100%;
+  }
+}
+
+/* ---------- With bigger text, the three round buttons move into their own row so they never cover the title ---------- */
+.tools {
+  display: contents;
+}
+
+html[data-text] .tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+html[data-text] .tools .a11ybtn,
+html[data-text] .tools .soundbtn {
+  position: static;
+  flex: none;
+}
+
+html[data-text] .tools .soundbtn {
+  margin-left: auto;
+}
+
+html[data-text] .tools #textBtn {
+  order: 1;
+}
+
+html[data-text] .tools #contrastBtn {
+  order: 2;
+}
+
+html[data-text] .tools #soundBtn {
+  order: 3;
+}
+
+/* very narrow phones: use the same separate row for the round buttons */
+@media (max-width: 360px) {
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+
+  .tools .a11ybtn,
+  .tools .soundbtn {
+    position: static;
+    flex: none;
+  }
+
+  .tools #textBtn {
+    order: 1;
+  }
+
+  .tools #contrastBtn {
+    order: 2;
+  }
+
+  .tools .soundbtn {
+    order: 3;
+    margin-left: auto;
+  }
+}
+
+/* round buttons keep a fixed size so "A++" always fits inside */
+.a11ybtn {
+  padding: 0;
+  font-size: 13px;
+}
+
+#contrastBtn {
+  font-size: 19px;
+}
+
+.soundbtn {
+  font-size: 18px;
+}
+
+label.check input {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
 }

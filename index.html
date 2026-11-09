@@ -8,13 +8,28 @@
   <meta name="theme-color" content="#1B6B3A">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%98%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // apply the saved text size and contrast before the page shows, so it does not flash
+    try {
+      var root = document.documentElement;
+      var savedText = localStorage.getItem("group4_quadratic_quest_text");
+      if (savedText === "large" || savedText === "xlarge") root.setAttribute("data-text", savedText);
+      if (localStorage.getItem("group4_quadratic_quest_contrast") === "high") root.setAttribute("data-contrast", "high");
+    } catch (e) {
+      // storage blocked, the defaults are used
+    }
+  </script>
 </head>
 <body>
 
   <noscript><p class="noscript">This game needs JavaScript. Please turn it on in your browser settings.</p></noscript>
 
   <header class="banner">
-    <button class="soundbtn" id="soundBtn" type="button" aria-pressed="true" aria-label="Sound effects are on. Tap to turn them off." title="Sound effects on or off">&#128266;</button>
+    <div class="tools">
+      <button class="soundbtn" id="soundBtn" type="button" aria-pressed="true" aria-label="Sound effects are on. Tap to turn them off." title="Sound effects on or off">&#128266;</button>
+      <button class="a11ybtn" id="textBtn" type="button" aria-label="Text size is normal. Tap to make the text larger." title="Text size">A</button>
+      <button class="a11ybtn" id="contrastBtn" type="button" aria-pressed="false" aria-label="High contrast is off. Tap to turn it on." title="High contrast">&#9680;</button>
+    </div>
     <h1>GROUP FOUR GAMIFICATION</h1>
     <p class="game-name">Quadratic Quest: The Elephant's Trail</p>
     <p class="course-name">ECT 301: Instructional Technology &amp; ICT Integration</p>
@@ -97,6 +112,7 @@
             <li>The practice question does not count for anything.</li>
             <li>Tap Listen to hear the worked steps read aloud, or Read aloud to hear the question.</li>
             <li>Use the speaker button at the top to switch sound effects on or off.</li>
+            <li>Use the A button (top left) for bigger text, and the half-moon button below it for high contrast.</li>
             <li>On a computer you can press A, B, C or D (or 1 to 4) to choose an answer.</li>
             <li>Your progress is saved on this device after every question. Tap Continue to carry on where you stopped.</li>
           </ul>
