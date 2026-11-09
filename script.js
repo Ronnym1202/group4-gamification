@@ -5,6 +5,9 @@
 var TIME_LIMIT = 30;   // seconds for each question
 var PASS_MARK = 3;     // correct answers needed (out of 5) to pass a level
 var BOARD_KEY = "group4_quadratic_quest_board";
+var SOUND_KEY = "group4_quadratic_quest_sound";
+var PROGRESS_KEY = "group4_quadratic_quest_progress";
+var LETTERS = ["A", "B", "C", "D"];
 
 // In every question the FIRST answer is the correct one.
 // The game shuffles them before showing, so the order is never the same.
@@ -185,6 +188,162 @@ var endAction = null;    // what the button on the level-end screen does
 var boardBackTo = "start";
 var practice = false;    // true while the practice round is running
 var relaxed = false;     // true when the player ticked Relaxed mode
+var levelOrder = [0, 1, 2, 3, 4];   // order the questions of this level are asked in
+
+// ---------- sound effects (made in the browser, no sound files needed) ----------
+var soundOn = true;
+var audioCtx = null;
+
+try {
+  if (localStorage.getItem(SOUND_KEY) === "off") soundOn = false;
+} catch (e) {
+  // storage blocked, sound stays on
+}
+
+function getAudio() {
+  if (!audioCtx) {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try {
+      audioCtx = new AC();
+    } catch (e) {
+      return null;
+    }
+  }
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+// one short note: pitch, when it starts, how long, wave shape, loudness
+function tone(freq, start, length, type, volume) {
+  var ctx = getAudio();
+  if (!ctx) return;
+  var osc = ctx.createOscillator();
+  var gain = ctx.createGain();
+  var t0 = ctx.currentTime + start;
+  osc.type = type || "sine";
+  osc.frequency.setValueAtTime(freq, t0);
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(volume || 0.15, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + length);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + length + 0.05);
+}
+
+function playSound(name) {
+  if (!soundOn) return;
+  if (name === "correct") {
+    tone(523, 0, 0.12);
+    tone(659, 0.11, 0.12);
+    tone(784, 0.22, 0.28);
+  } else if (name === "wrong") {
+    tone(220, 0, 0.18, "sawtooth", 0.09);
+    tone(165, 0.16, 0.32, "sawtooth", 0.09);
+  } else if (name === "tick") {
+    tone(880, 0, 0.05, "square", 0.04);
+  } else if (name === "levelup") {
+    tone(523, 0, 0.14);
+    tone(659, 0.13, 0.14);
+    tone(784, 0.26, 0.14);
+    tone(1047, 0.39, 0.4);
+  } else if (name === "fail") {
+    tone(392, 0, 0.2, "triangle");
+    tone(330, 0.19, 0.2, "triangle");
+    tone(262, 0.38, 0.4, "triangle");
+  } else if (name === "fanfare") {
+    var notes = [523, 523, 523, 659, 784, 659, 784, 1047];
+    var starts = [0, 0.14, 0.28, 0.42, 0.6, 0.85, 1.0, 1.25];
+    var lengths = [0.12, 0.12, 0.12, 0.16, 0.22, 0.14, 0.2, 0.7];
+    for (var i = 0; i < notes.length; i++) {
+      tone(notes[i], starts[i], lengths[i], "triangle", 0.16);
+    }
+  }
+}
+
+function drawSoundButton() {
+  var b = $("soundBtn");
+  b.textContent = soundOn ? "🔊" : "🔇";
+  b.setAttribute("aria-pressed", soundOn ? "true" : "false");
+  b.setAttribute("aria-label", soundOn ?
+    "Sound effects are on. Tap to turn them off." :
+    "Sound effects are off. Tap to turn them on.");
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  try {
+    localStorage.setItem(SOUND_KEY, soundOn ? "on" : "off");
+  } catch (e) {
+    // ignore
+  }
+  drawSoundButton();
+  if (soundOn) playSound("correct");
+}
+
+// ---------- reading aloud (the browser's own voice, nothing to install) ----------
+var canSpeak = ("speechSynthesis" in window) && ("SpeechSynthesisUtterance" in window);
+
+// turns maths symbols into words so the voice reads them properly
+function toSpeech(text) {
+  var s = text;
+  s = s.replace(/(\d)\s*m²/g, "$1 square metres");
+  s = s.replace(/(\d)\s*m\b/g, "$1 metres");
+  // brackets that hold ordinary words become pauses, the rest are read out
+  s = s.replace(/\(([^()]*\b[A-Za-z]{3,}\b[^()]*)\)/g, ", $1, ");
+  s = s.replace(/\(/g, " open bracket ");
+  s = s.replace(/\)/g, " close bracket ");
+  s = s.replace(/²/g, " squared ");
+  s = s.replace(/√/g, " square root of ");
+  s = s.replace(/±/g, " plus or minus ");
+  s = s.replace(/÷/g, " divided by ");
+  s = s.replace(/×/g, " times ");
+  s = s.replace(/=/g, " equals ");
+  s = s.replace(/\+/g, " plus ");
+  s = s.replace(/−/g, " minus ");
+  s = s.replace(/(\d)\/(\d)/g, "$1 over $2");
+  s = s.replace(/\s+/g, " ").trim();
+  return s;
+}
+
+function speak(text) {
+  if (!canSpeak) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(toSpeech(text));
+  u.lang = "en-GB";
+  u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+}
+
+function stopSpeaking() {
+  if (canSpeak) window.speechSynthesis.cancel();
+}
+
+function readQuestion() {
+  var parts = [$("question").textContent];
+  var buttons = document.querySelectorAll(".option");
+  for (var i = 0; i < buttons.length; i++) {
+    parts.push("Option " + LETTERS[i] + ". " + buttons[i].getAttribute("data-value"));
+  }
+  speak(parts.join(". "));
+}
+
+// adds the Listen button under the feedback box
+function addListenButton(text) {
+  if (!canSpeak) return;
+  var box = $("feedback").firstChild;
+  if (!box) return;
+  var b = document.createElement("button");
+  b.className = "btn alt small listen";
+  b.textContent = "🔊 Listen to the steps";
+  b.addEventListener("click", function () {
+    speak(text);
+  });
+  box.appendChild(b);
+}
 
 // ---------- small helpers ----------
 function $(id) {
@@ -192,12 +351,14 @@ function $(id) {
 }
 
 function show(id) {
+  stopSpeaking();
   var all = document.querySelectorAll(".screen");
   for (var i = 0; i < all.length; i++) {
     all[i].classList.remove("active");
   }
   $(id).classList.add("active");
   window.scrollTo(0, 0);
+  if (id === "start") refreshContinue();
 }
 
 function shuffle(arr) {
@@ -234,6 +395,11 @@ function updateStatus() {
 
 // ---------- starting the game ----------
 function startGame() {
+  var old = loadProgress();
+  if (old) {
+    if (!confirm("There is a saved game for " + old.name + ". Start a new game and delete it?")) return;
+    clearProgress();
+  }
   var typed = $("nameInput").value.trim();
   playerName = typed === "" ? "Player" : typed;
   relaxed = $("relaxed").checked;
@@ -252,6 +418,7 @@ function showIntro() {
   $("introStory").textContent = lvl.story;
   $("introTip").textContent = "Tip: " + lvl.tip;
   moveElephant(levelNo);
+  saveProgress("intro");
   show("intro");
 }
 
@@ -260,7 +427,8 @@ function startLevel() {
   qNo = 0;
   levelScore = 0;
   levelCorrect = 0;
-  currentQuestions = shuffle(levels[levelNo].questions.slice());
+  levelOrder = shuffle([0, 1, 2, 3, 4]);
+  currentQuestions = orderedQuestions(levelNo, levelOrder);
   show("game");
   showQuestion();
 }
@@ -270,7 +438,9 @@ function showQuestion() {
   var q = currentQuestions[qNo];
   answered = false;
   hintUsed = false;
+  stopSpeaking();
 
+  saveProgress("play");
   updateStatus();
   $("qCount").textContent = practice ? "Practice question (does not count)" :
     "Question " + (qNo + 1) + " of " + currentQuestions.length;
@@ -286,8 +456,20 @@ function showQuestion() {
   for (var i = 0; i < options.length; i++) {
     var b = document.createElement("button");
     b.className = "option";
-    b.textContent = options[i];
     b.setAttribute("data-value", options[i]);
+
+    var letter = document.createElement("span");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+    var label = document.createElement("span");
+    label.className = "label";
+    label.textContent = options[i];
+    var mark = document.createElement("span");
+    mark.className = "mark";
+
+    b.appendChild(letter);
+    b.appendChild(label);
+    b.appendChild(mark);
     b.addEventListener("click", makeClickHandler(b, options[i]));
     box.appendChild(b);
   }
@@ -331,6 +513,7 @@ function stopTimer() {
 
 function drawTime() {
   $("time").textContent = timeLeft + "s";
+  if (timeLeft <= 5 && timeLeft > 0) playSound("tick");
   var bar = $("timebar");
   bar.style.width = (timeLeft / TIME_LIMIT * 100) + "%";
   if (timeLeft <= 8) {
@@ -346,13 +529,14 @@ function lockOptions(correctText, chosenText) {
   for (var i = 0; i < buttons.length; i++) {
     var b = buttons[i];
     var value = b.getAttribute("data-value");
+    var mark = b.querySelector(".mark");
     b.disabled = true;
     if (value === correctText) {
       b.classList.add("right");
-      b.textContent = "✓ " + value;
+      mark.textContent = "✓";
     } else if (value === chosenText) {
       b.classList.add("wrong");
-      b.textContent = "✗ " + value;
+      mark.textContent = "✗";
     }
   }
   $("hintBtn").disabled = true;
@@ -365,10 +549,12 @@ function chooseAnswer(button, text) {
 
   var q = currentQuestions[qNo];
   var correct = q.answers[0];
+  var isRight = (text === correct);
   lockOptions(correct, text);
+  playSound(isRight ? "correct" : "wrong");
 
   if (practice) {
-    if (text === correct) {
+    if (isRight) {
       $("feedback").innerHTML =
         "<div class='good'><p><strong>Correct!</strong> That is how every question works. " +
         "This practice round does not count.</p></div>";
@@ -378,11 +564,12 @@ function chooseAnswer(button, text) {
         "<p>" + q.solution + "</p>" +
         "<p>In the real game a wrong answer costs one life, so read the steps carefully.</p></div>";
     }
+    addListenButton("The correct answer is " + correct + ". " + q.solution);
     afterAnswer();
     return;
   }
 
-  if (text === correct) {
+  if (isRight) {
     var bonus = relaxed ? 0 : Math.min(10, Math.floor(timeLeft / 3));
     var points = 10 + bonus - (hintUsed ? 5 : 0);
     if (points < 0) points = 0;
@@ -391,11 +578,13 @@ function chooseAnswer(button, text) {
     $("feedback").innerHTML =
       "<div class='good'><p><strong>Correct!</strong> +" + points + " points" +
       (bonus > 0 ? " (includes " + bonus + " time bonus)" : "") + "</p></div>";
+    addListenButton("Here are the steps. " + q.solution);
   } else {
     lives--;
     $("feedback").innerHTML =
       "<div class='bad'><p><strong>Not quite.</strong> The correct answer is: " + correct + "</p>" +
       "<p>" + q.solution + "</p></div>";
+    addListenButton("The correct answer is " + correct + ". " + q.solution);
   }
 
   afterAnswer();
@@ -407,15 +596,18 @@ function timeUp() {
 
   var q = currentQuestions[qNo];
   lockOptions(q.answers[0], "");
+  playSound("wrong");
   lives--;
   $("feedback").innerHTML =
     "<div class='bad'><p><strong>Time is up!</strong> The correct answer is: " + q.answers[0] + "</p>" +
     "<p>" + q.solution + "</p></div>";
+  addListenButton("Time is up. The correct answer is " + q.answers[0] + ". " + q.solution);
 
   afterAnswer();
 }
 
 function afterAnswer() {
+  saveProgress("answered");
   updateStatus();
   var lastQuestion = (qNo >= currentQuestions.length - 1);
   var next = $("nextBtn");
@@ -425,6 +617,13 @@ function afterAnswer() {
     next.textContent = (lastQuestion || lives <= 0) ? "Finish Level" : "Next Question";
   }
   next.classList.remove("hidden");
+  // keyboard users can press Enter for the next question, phones scroll it into view
+  try {
+    next.focus({ preventScroll: true });
+  } catch (e) {
+    // older browsers
+  }
+  next.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function useHint() {
@@ -469,6 +668,8 @@ function endLevel() {
   var stats = "Correct answers: " + levelCorrect + " out of " + currentQuestions.length +
               " | Points: " + levelScore;
   $("endStats").textContent = stats;
+
+  playSound(passed ? "levelup" : "fail");
 
   if (passed) {
     bankedScore += levelScore;
@@ -528,8 +729,37 @@ function finishGame() {
   $("finalStats").textContent = playerName + ": " + bankedScore + " points | " +
     bankedCorrect + " out of " + total + " correct (" + percent + "%)";
 
+  finalPercent = percent;
+  finalBadgeText = badge.textContent;
+  finalBadgeClass = badge.className;
+  $("certBtn").classList.toggle("hidden", percent < 50);
+
+  clearProgress();
   saveScore();
   show("final");
+  playSound("fanfare");
+}
+
+// ---------- certificate ----------
+var finalPercent = 0;
+var finalBadgeText = "";
+var finalBadgeClass = "badge";
+
+function fillCertificate() {
+  var name = $("certName").value.trim();
+  $("certNameOut").textContent = name === "" ? "Player" : name;
+  $("certBadge").className = finalBadgeClass + " c-badge";
+  $("certBadge").textContent = finalBadgeText;
+  $("certStats").textContent = bankedScore + " points | " + bankedCorrect + " out of " +
+    (levels.length * 5) + " correct (" + finalPercent + "%)" + (relaxed ? " | Relaxed mode" : "");
+  $("certDate").textContent = new Date().toLocaleDateString("en-GB",
+    { day: "numeric", month: "long", year: "numeric" });
+}
+
+function showCertificate() {
+  $("certName").value = playerName === "Player" ? "" : playerName;
+  fillCertificate();
+  show("certificate");
 }
 
 // ---------- leaderboard (saved in the browser) ----------
@@ -576,6 +806,16 @@ function showBoard(from) {
   show("board");
 }
 
+function clearBoard() {
+  if (!confirm("Delete all saved scores on this device?")) return;
+  try {
+    localStorage.removeItem(BOARD_KEY);
+  } catch (e) {
+    // ignore
+  }
+  showBoard(boardBackTo);
+}
+
 function playAgain() {
   $("trail").classList.add("hidden");
   moveElephant(0);
@@ -588,6 +828,140 @@ if (window.innerWidth > 600) {
   for (var f = 0; f < folds.length; f++) {
     folds[f].open = true;
   }
+}
+
+// ---------- saving progress so a player can continue later ----------
+function orderedQuestions(lvl, order) {
+  var list = [];
+  for (var i = 0; i < order.length; i++) {
+    list.push(levels[lvl].questions[order[i]]);
+  }
+  return list;
+}
+
+function saveProgress(stage) {
+  if (practice) return;
+  var data = {
+    v: 1,
+    name: playerName,
+    relaxed: relaxed,
+    levelNo: levelNo,
+    stage: stage,
+    qNo: qNo,
+    lives: lives,
+    levelScore: levelScore,
+    levelCorrect: levelCorrect,
+    order: levelOrder,
+    bankedScore: bankedScore,
+    bankedCorrect: bankedCorrect
+  };
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(data));
+  } catch (e) {
+    // storage blocked, the game still works but cannot be continued later
+  }
+}
+
+function clearProgress() {
+  try {
+    localStorage.removeItem(PROGRESS_KEY);
+  } catch (e) {
+    // ignore
+  }
+}
+
+function isInt(n, min, max) {
+  return typeof n === "number" && n % 1 === 0 && n >= min && n <= max;
+}
+
+// returns the saved game, or null if there is none or the data looks wrong
+function loadProgress() {
+  var p;
+  try {
+    var raw = localStorage.getItem(PROGRESS_KEY);
+    if (!raw) return null;
+    p = JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+  if (!p || p.v !== 1 || typeof p.name !== "string") return null;
+  if (p.stage !== "intro" && p.stage !== "play" && p.stage !== "answered") return null;
+  if (!isInt(p.levelNo, 0, levels.length - 1) || !isInt(p.qNo, 0, 4) || !isInt(p.lives, 0, 3)) return null;
+  if (!isInt(p.levelScore, 0, 1000) || !isInt(p.levelCorrect, 0, 5)) return null;
+  if (!isInt(p.bankedScore, 0, 5000) || !isInt(p.bankedCorrect, 0, 20)) return null;
+  if (!Array.isArray(p.order) || p.order.length !== 5) return null;
+  var seen = [0, 0, 0, 0, 0];
+  for (var i = 0; i < 5; i++) {
+    if (!isInt(p.order[i], 0, 4) || seen[p.order[i]]) return null;
+    seen[p.order[i]] = 1;
+  }
+  p.name = p.name.slice(0, 20);
+  p.relaxed = (p.relaxed === true);
+  return p;
+}
+
+// shows or hides the "Continue my game" box on the start screen
+function refreshContinue() {
+  var p = loadProgress();
+  var box = $("resumeBox");
+  if (!p) {
+    box.classList.add("hidden");
+    return;
+  }
+  var where;
+  if (p.stage === "intro") {
+    where = "at the start of " + levels[p.levelNo].name;
+  } else if (p.stage === "play") {
+    where = "in " + levels[p.levelNo].name + ", question " + (p.qNo + 1);
+  } else if (p.qNo >= 4 || p.lives <= 0) {
+    where = "finishing " + levels[p.levelNo].name;
+  } else {
+    where = "in " + levels[p.levelNo].name + ", question " + (p.qNo + 2);
+  }
+  var points = p.bankedScore + (p.stage === "intro" ? 0 : p.levelScore);
+  $("resumeText").textContent = "Saved game for " + p.name + ": " + where +
+    " (" + points + " points so far).";
+  box.classList.remove("hidden");
+}
+
+function continueGame() {
+  var p = loadProgress();
+  if (!p) {
+    refreshContinue();
+    return;
+  }
+  playerName = p.name;
+  relaxed = p.relaxed;
+  practice = false;
+  levelNo = p.levelNo;
+  bankedScore = p.bankedScore;
+  bankedCorrect = p.bankedCorrect;
+  $("trail").classList.remove("hidden");
+
+  if (p.stage === "intro") {
+    showIntro();
+    return;
+  }
+
+  levelOrder = p.order;
+  currentQuestions = orderedQuestions(levelNo, levelOrder);
+  qNo = p.qNo;
+  lives = p.lives;
+  levelScore = p.levelScore;
+  levelCorrect = p.levelCorrect;
+  moveElephant(levelNo);
+  show("game");
+  if (p.stage === "play") {
+    showQuestion();
+  } else {
+    nextQuestion();   // the last answer was already counted, so move on
+  }
+}
+
+function discardProgress() {
+  if (!confirm("Delete the saved game? This cannot be undone.")) return;
+  clearProgress();
+  refreshContinue();
 }
 
 // ---------- practice round and quitting ----------
@@ -605,7 +979,7 @@ function startPractice() {
 
 function quitGame() {
   if (!practice) {
-    var ok = confirm("Quit and go back to the start screen? Your progress will be lost.");
+    var ok = confirm("Leave the game? Your progress is saved on this device, so you can continue later.");
     if (!ok) return;
   }
   stopTimer();
@@ -630,3 +1004,35 @@ $("boardBack").addEventListener("click", function () { show(boardBackTo); });
 $("nameInput").addEventListener("keydown", function (e) {
   if (e.key === "Enter") startGame();
 });
+$("soundBtn").addEventListener("click", toggleSound);
+$("readBtn").addEventListener("click", readQuestion);
+$("certBtn").addEventListener("click", showCertificate);
+$("certBack").addEventListener("click", function () { show("final"); });
+$("printBtn").addEventListener("click", function () { window.print(); });
+$("certName").addEventListener("input", fillCertificate);
+$("clearBoardBtn").addEventListener("click", clearBoard);
+$("continueBtn").addEventListener("click", continueGame);
+$("discardBtn").addEventListener("click", discardProgress);
+
+// the sound system can only start after a tap, so wake it on the first click
+document.addEventListener("click", function () {
+  if (soundOn) getAudio();
+});
+
+// computer keyboard: A to D or 1 to 4 choose an answer
+document.addEventListener("keydown", function (e) {
+  if (!$("game").classList.contains("active") || answered) return;
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+  var key = e.key.toLowerCase();
+  var pos = "abcd".indexOf(key);
+  if (pos === -1) pos = "1234".indexOf(key);
+  if (pos === -1) return;
+  var buttons = document.querySelectorAll(".option");
+  if (buttons[pos] && !buttons[pos].disabled) buttons[pos].click();
+});
+
+if (!canSpeak) {
+  $("readBtn").classList.add("hidden");
+}
+drawSoundButton();
+refreshContinue();

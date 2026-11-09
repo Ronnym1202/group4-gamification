@@ -589,3 +589,248 @@ details.fold > table {
     padding: 12px;
   }
 }
+
+/* ---------- Sound button ---------- */
+.banner {
+  position: relative;
+}
+
+.soundbtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.soundbtn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.noscript {
+  margin: 0;
+  padding: 12px;
+  background: var(--red);
+  color: #fff;
+  text-align: center;
+}
+
+/* ---------- Answer options with letters ---------- */
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.option .letter {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-align: center;
+  line-height: 30px;
+}
+
+.option .label {
+  flex: 1;
+}
+
+.option .mark {
+  flex: none;
+  min-width: 1.2em;
+  font-weight: bold;
+  text-align: right;
+}
+
+.option.right .letter,
+.option.wrong .letter {
+  background: #fff;
+}
+
+.option.right .letter {
+  color: var(--green);
+}
+
+.option.wrong .letter {
+  color: var(--red);
+}
+
+.option:disabled:not(.right):not(.wrong) {
+  color: #66726a;
+}
+
+.feedback .listen {
+  margin-top: 8px;
+}
+
+/* ---------- Keyboard focus ---------- */
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---------- Certificate ---------- */
+.certbar {
+  margin-bottom: 14px;
+}
+
+.certificate {
+  background: #fff;
+  border: 10px double var(--green);
+  padding: 6px;
+}
+
+.cert-inner {
+  border: 3px solid var(--gold);
+  padding: 18px 14px;
+  text-align: center;
+}
+
+.cert-inner p {
+  margin: 4px 0;
+}
+
+.c-uni {
+  letter-spacing: 4px;
+  font-weight: bold;
+  color: var(--green-dark);
+}
+
+.cert-inner .c-title {
+  margin: 4px 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  color: var(--green);
+}
+
+.c-small {
+  color: #44554a;
+}
+
+.c-name {
+  display: inline-block;
+  min-width: 60%;
+  max-width: 100%;
+  margin: 8px 0 !important;
+  padding: 0 12px;
+  border-bottom: 2px solid var(--gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  font-style: italic;
+  color: var(--blue);
+  overflow-wrap: anywhere;
+}
+
+.c-game {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--green-dark);
+}
+
+.c-badge {
+  margin: 12px 0 8px;
+}
+
+.c-stats {
+  font-weight: bold;
+}
+
+.c-foot {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 2px solid var(--gold);
+  font-size: 0.8rem;
+  color: #44554a;
+}
+
+/* ---------- Calmer motion for people who ask for it ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .elephant,
+  .fill,
+  .timebar {
+    transition: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner h1 {
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+  }
+
+  .cert-inner .c-title {
+    font-size: 1.4rem;
+  }
+
+  .c-name {
+    font-size: 1.5rem;
+  }
+
+  .c-game {
+    font-size: 1.05rem;
+  }
+
+  .option .letter {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+  }
+}
+
+/* ---------- Printing (only the certificate prints) ---------- */
+@page {
+  size: A4 landscape;
+  margin: 8mm;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .banner,
+  .footer,
+  .trail,
+  .noprint,
+  .noscript {
+    display: none !important;
+  }
+
+  main {
+    max-width: none;
+    padding: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ---------- Saved game box ---------- */
+.resume {
+  background: #e3f3e8;
+  border-left: 5px solid var(--green);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 12px 0;
+}
+
+.resume p {
+  margin: 0;
+  font-weight: bold;
+  color: var(--green-dark);
+}
